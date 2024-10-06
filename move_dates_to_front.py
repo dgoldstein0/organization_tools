@@ -4,6 +4,12 @@ import re
 from pathlib import Path
 
 def make_new_name(filename: str) -> str:
+    # if there are multiple dates in the filename, give up for now.  May revisit this case later, but often
+    # we'll either need to ask the user which to use and both may be wrong for the current organization (e.g.
+    # often these are a service period when I use the statement date in the filename)
+    if len(list(re.finditer(r"\d\d\d\d-\d\d-\d\d", filename))) >= 2:
+        return filename
+
     m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)(\.\S+)?$", filename)
     if m:
         first, date, second, ext = m.groups(2)
