@@ -18,3 +18,6 @@ assert make_new_name("Superbill20221201-16-129h7n7.pdf") == "Superbill20221201-1
 
 # skip the multi-date case for now
 assert make_new_name("2022-05-22-to-2022-06-21-comcast-mobile.pdf") == "2022-05-22-to-2022-06-21-comcast-mobile.pdf"
+
+# doesn't die if there's no extension
+assert make_new_name("2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt") == "2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt"

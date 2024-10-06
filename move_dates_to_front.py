@@ -10,7 +10,7 @@ def make_new_name(filename: str) -> str:
     if len(list(re.finditer(r"\d\d\d\d-\d\d-\d\d", filename))) >= 2:
         return filename
 
-    m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)(\.\S+)?$", filename)
+    m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)((?:\.\S+)?)$", filename)
     if m:
         first, date, second, ext = m.groups(2)
 
@@ -35,7 +35,11 @@ def main():
     for dirpath, dirnames, filenames in args.folder.walk():
         for fname in filenames:
 
-            new_name = make_new_name(fname)
+            try:
+                new_name = make_new_name(fname)
+            except Exception as e:
+                raise ValueError(f"died on {dirpath/fname}") from e
+
             if fname != new_name:
                 rename = False
                 while (True):
