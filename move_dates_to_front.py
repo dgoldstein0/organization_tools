@@ -8,25 +8,27 @@ def main():
     parser.add_argument("--folder", type=Path)
     args = parser.parse_args()
 
-    for f in args.folder.iterdir():
-        m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)(\.\S+)?$", f.name)
-        if m:
-            first, date, second, ext = m.groups(2)
-            new_name = re.sub(r"\s+", " ", f"{date} {first.strip()} {second.strip()}").strip() + ext
+    print(f"Searching for files with dates in the names within {args.folder}")
+    for dirpath, dirnames, filenames in args.folder.walk():
+        for fname in filenames:
+            m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)(\.\S+)?$", fname)
+            if m:
+                first, date, second, ext = m.groups(2)
+                new_name = re.sub(r"\s+", " ", f"{date} {first.strip()} {second.strip()}").strip() + ext
 
-            if f.name != new_name:
-                rename = False
-                while (True):
-                    confirm = input(f"Rename '{f.name}' to '{new_name}'? [Y/n]:")
-                    if confirm in ("y", "Y", ""):
-                        rename = True
-                        break
-                    elif confirm in ("n", "N"):
-                        rename = False
-                        break
+                if fname != new_name:
+                    rename = False
+                    while (True):
+                        confirm = input(f"[{dirpath.relative_to(args.folder)}] rename '{fname}' to '{new_name}'? [Y/n]:")
+                        if confirm in ("y", "Y", ""):
+                            rename = True
+                            break
+                        elif confirm in ("n", "N"):
+                            rename = False
+                            break
 
-                if rename:
-                    f.rename(args.folder / new_name)
+                    if rename:
+                        (dirpath / fname).rename(dirpath / new_name)
 
 
 
