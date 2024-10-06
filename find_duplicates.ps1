@@ -5,5 +5,5 @@ Get-ChildItem -Recurse -File `
 | Get-FileHash `
 | Group-Object -Property Hash `
 | ?{ $_.Count -gt 1 } `
-| %{ $_.Group } 1
+| %{ $_.Group } `
 | Format-list Hash, Path
