@@ -7,6 +7,12 @@ def make_new_name(filename: str) -> str:
     m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)(\.\S+)?$", filename)
     if m:
         first, date, second, ext = m.groups(2)
+
+        # smell test: most dates should be 19xx or 20xx, otherwise we didn't match a date.
+        # TODO: we could also check the range of the months
+        if date[:2] not in ("19", "20"):
+            return filename
+
         # basic idea is to move the date to the front, keep the other parts, but strip out extra spaces
         # as well as - or _ on the boundaries of our parts - i.e. " -foo" should be " foo" but
         # " - foo" should be left as is
