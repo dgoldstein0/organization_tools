@@ -18,10 +18,9 @@ def find_duplicates(folder: Path):
     for paths in paths_by_size.values():
         if len(paths) > 1:
             for fpath in paths:
-                m = hashlib.sha256()
                 with open(fpath, "rb") as f:
-                    m.update(f.read())
-                paths_by_hash[m.hexdigest()].append(fpath)
+                    digest = hashlib.file_digest(f, "sha256")
+                paths_by_hash[digest.hexdigest()].append(fpath)
 
     for paths in paths_by_hash.values():
         if len(paths) > 1:
