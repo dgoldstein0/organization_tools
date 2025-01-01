@@ -3,6 +3,8 @@ import re
 
 from pathlib import Path
 
+from util import ask_question
+
 def make_new_name(filename: str) -> str:
     # if there are multiple dates in the filename, give up for now.  May revisit this case later, but often
     # we'll either need to ask the user which to use and both may be wrong for the current organization (e.g.
@@ -41,15 +43,7 @@ def main():
                 raise ValueError(f"died on {dirpath/fname}") from e
 
             if fname != new_name:
-                rename = False
-                while (True):
-                    confirm = input(f"[{dirpath.relative_to(args.folder)}] rename '{fname}' to '{new_name}'? [Y/n]:")
-                    if confirm in ("y", "Y", ""):
-                        rename = True
-                        break
-                    elif confirm in ("n", "N"):
-                        rename = False
-                        break
+                rename = ask_question(f"[{dirpath.relative_to(args.folder)}] rename '{fname}' to '{new_name}'?", default=True)
 
                 if rename:
                     (dirpath / fname).rename(dirpath / new_name)
