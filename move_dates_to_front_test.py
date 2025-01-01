@@ -22,4 +22,18 @@ assert make_new_name("2022-05-22-to-2022-06-21-comcast-mobile.pdf") == "2022-05-
 # doesn't die if there's no extension
 assert make_new_name("2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt") == "2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt"
 
-assert make_new_name("IMG_20241225_000605.jpg") == "2024-12-25_000605.jpg"
+# handles Dropbox photo naming
+assert make_new_name("IMG_20241225_000605.jpg") == "2024-12-25 000605.jpg"
+
+# is idempotent
+for input_name in [
+    'foo 2034-03-12.pdf',
+    'ADP Workforce Now dgoldstein Statements 2022-11-17 q4 rsus.pdf',
+    '2024-04-30 Pay Date 02 - perks.pdf',
+    "eStmt_2024-01-17.pdf",
+    "Superbill20221201-16-129h7n7.pdf",
+    "2022-05-22-to-2022-06-21-comcast-mobile.pdf",
+    "2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt",
+    "IMG_20241225_000605.jpg",
+]:
+    assert make_new_name(make_new_name(input_name)) == make_new_name(input_name)

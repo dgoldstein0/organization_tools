@@ -36,7 +36,7 @@ def make_new_name(filename: str) -> str:
         if year[:2] not in ("19", "20"):
             return filename
 
-        return f"{year}-{month}-{day}_{time}.jpg"
+        return f"{year}-{month}-{day} {time}.jpg"
 
 
 
