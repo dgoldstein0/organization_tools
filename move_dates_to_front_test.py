@@ -21,3 +21,5 @@ assert make_new_name("2022-05-22-to-2022-06-21-comcast-mobile.pdf") == "2022-05-
 
 # doesn't die if there's no extension
 assert make_new_name("2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt") == "2023-12-29 mytherapy donation Gmail - Your Google Play Order Receipt"
+
+assert make_new_name("IMG_20241225_000605.jpg") == "2024-12-25_000605.jpg"

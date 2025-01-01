@@ -14,7 +14,7 @@ def make_new_name(filename: str) -> str:
 
     m = re.search(r"^(.*?)(\d\d\d\d-\d\d-\d\d)(.*?)((?:\.\S+)?)$", filename)
     if m:
-        first, date, second, ext = m.groups(2)
+        first, date, second, ext = m.groups()
 
         # smell test: most dates should be 19xx or 20xx, otherwise we didn't match a date.
         # TODO: we could also check the range of the months
@@ -25,6 +25,20 @@ def make_new_name(filename: str) -> str:
         # as well as - or _ on the boundaries of our parts - i.e. " -foo" should be " foo" but
         # " - foo" should be left as is
         return re.sub(r"\s+", " ", f"{date} {first.strip('-_ ')} {second.strip('-_ ')}").strip('-_ ') + ext
+
+    # this is the format that Dropbox's "upload a new photo" uses for it's file naming.
+    m = re.match(r"^IMG_(\d{4})(\d\d)(\d\d)_(\d{6}).jpg$", filename)
+    if m:
+        year, month, day, time = m.groups()
+
+        # smell test: most dates should be 19xx or 20xx, otherwise we didn't match a date.
+        # TODO: we could also check the range of the months
+        if year[:2] not in ("19", "20"):
+            return filename
+
+        return f"{year}-{month}-{day}_{time}.jpg"
+
+
 
     return filename
 
