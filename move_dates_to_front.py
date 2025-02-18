@@ -38,9 +38,8 @@ def make_new_name(filename: str) -> str:
 
         return f"{year}-{month}-{day} {time}.jpg"
 
-
-
     return filename
+
 
 def main():
     parser = argparse.ArgumentParser()
