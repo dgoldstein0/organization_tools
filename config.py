@@ -10,7 +10,7 @@ def get_config_for_folder(folder: Path, section: str) -> Optional[dict[str, dict
         return None
 
     with open(config_path, 'r') as f:
-        return json.load(f)[section]
+        return json.load(f).get(section, {})
 
 def write_config_for_folder(folder: Path, section: str, updated_config: dict[str, dict[str, Any]]) -> None:
     config_path = folder / ".organizerc.json"
