@@ -3,7 +3,10 @@ import re
 
 from pathlib import Path
 
+from config import get_config_for_folder, write_config_for_folder
 from util import ask_question
+
+CONFIG_SECTION = "move_dates"
 
 def make_new_name(filename: str) -> str:
     # if there are multiple dates in the filename, give up for now.  May revisit this case later, but often
@@ -48,7 +51,15 @@ def main():
 
     print(f"Searching for files with dates in the names within {args.folder}")
     for dirpath, dirnames, filenames in args.folder.walk():
+
+        config = get_config_for_folder(dirpath, CONFIG_SECTION) or {}
+        rel_dirpath = dirpath.relative_to(args.folder)
+
+        always_skip_files = []
         for fname in filenames:
+            if config.get(fname, {}).get("skip", False):
+                print(f"[{rel_dirpath}] skipping {fname} because it's been marked always_skip in this folder's .organizerc.json")
+                continue
 
             try:
                 new_name = make_new_name(fname)
@@ -56,10 +67,22 @@ def main():
                 raise ValueError(f"died on {dirpath/fname}") from e
 
             if fname != new_name:
-                rename = ask_question(f"[{dirpath.relative_to(args.folder)}] rename '{fname}' to '{new_name}'?", default=True)
+                rename = ask_question(f"[{rel_dirpath}] rename '{fname}' to '{new_name}'?", default=True)
 
                 if rename:
                     (dirpath / fname).rename(dirpath / new_name)
+                else:
+                    always_skip = ask_question(f"[{rel_dirpath}] always skip renaming '{fname}'?", default=False)
+
+                    if always_skip:
+                        always_skip_files.append(fname)
+
+        if always_skip_files:
+            new_config = (config or {}).copy()
+            for fname in always_skip_files:
+                new_config[fname] = {"skip": True}
+
+            write_config_for_folder(dirpath, CONFIG_SECTION, new_config)
 
 
 
