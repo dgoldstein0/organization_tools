@@ -43,8 +43,9 @@ def make_new_name(filename: str) -> str:
 
     months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     short_months =  [m[:3] for m in months]
+    all_months = months + short_months + [m.lower() for m in months] + [m.lower() for m in short_months] + [m.upper() for m in months] + [m.upper() for m in short_months]
     # TODO add case differences
-    months_re = "|".join(months+short_months)
+    months_re = "|".join(all_months)
     m = re.search(rf"^(.*?)[-_ ]?({months_re})[-_ ]?(\d\d\d\d)(.*)$", filename)
     if m:
         first, month_str, year, second = m.groups()
@@ -57,7 +58,7 @@ def make_new_name(filename: str) -> str:
         # smell test: most dates should be 19xx or 20xx, otherwise we didn't match a date.
         if year[:2] not in ("19", "20"):
             return filename
-        month_num = ((months + short_months).index(month_str) % 12) + 1
+        month_num = (all_months.index(month_str) % 12) + 1
 
         return f"{year}-{month_num:>02} {first}{second}"
 
