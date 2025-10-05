@@ -88,15 +88,31 @@ def main():
                 raise ValueError(f"died on {dirpath/fname}") from e
 
             if fname != new_name:
-                rename = ask_question(f"[{rel_dirpath}] rename '{fname}' to '{new_name}'?", default=True)
+                old_path = dirpath / fname
+                new_path = dirpath / new_name
+                if new_path.exists():
+                    if are_duplicates(old_path, new_path):
+                        delete = ask_question(f"[{rel_dirpath}] {new_name} already exists and is a duplicate of {fname}.  Delete {fname}?", default=True)
+                        if delete:
+                            old_path.remove()
+                        else:
+                            always_skip = ask_question(f"[{rel_dirpath}] always skip renaming '{fname}'?", default=False)
 
-                if rename:
-                    (dirpath / fname).rename(dirpath / new_name)
+                            if always_skip:
+                                always_skip_files.append(fname)
+                    else:
+                        print(f"[{rel_dirpath}] {new_name} already exists and is not an exact duplicate of {fname}.  This must be manually resolved if you want the file renamed.  Skipping.")
+
                 else:
-                    always_skip = ask_question(f"[{rel_dirpath}] always skip renaming '{fname}'?", default=False)
+                    rename = ask_question(f"[{rel_dirpath}] rename '{fname}' to '{new_name}'?", default=True)
 
-                    if always_skip:
-                        always_skip_files.append(fname)
+                    if rename:
+                        old_path.rename(new_path)
+                    else:
+                        always_skip = ask_question(f"[{rel_dirpath}] always skip renaming '{fname}'?", default=False)
+
+                        if always_skip:
+                            always_skip_files.append(fname)
 
         if always_skip_files:
             new_config = (config or {}).copy()
@@ -105,7 +121,16 @@ def main():
 
             write_config_for_folder(dirpath, CONFIG_SECTION, new_config)
 
+def are_duplicates(path1: Path, path2) -> bool:
+    if path1.stat().st_size != path2.stat().st_size:
+        return False
 
+    with open(path1, "rb") as f:
+        digest1 = hashlib.file_digest(f, "sha256")
+    with open(path2, "rb") as f:
+        digest2 = hashlib.file_digest(f, "sha256")
+
+    return digest1.hexdigest() == digest2.hexdigest()
 
 if __name__ == "__main__":
     main()
