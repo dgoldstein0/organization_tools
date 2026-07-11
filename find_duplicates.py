@@ -3,9 +3,10 @@ import hashlib
 
 from collections import defaultdict
 from pathlib import Path
+from util import ask_question
 
 
-def find_duplicates(folders: list[Path]):
+def find_duplicates(folders: list[Path]) -> list[list[Path]]:
     paths_by_size = defaultdict(list)
 
     for folder in folders:
@@ -23,16 +24,18 @@ def find_duplicates(folders: list[Path]):
                     digest = hashlib.file_digest(f, "sha256")
                 paths_by_hash[digest.hexdigest()].append(fpath)
 
+    results: list[list[Path]] = []
     for paths in paths_by_hash.values():
         if len(paths) > 1:
-            print("Found duplicate files")
-            for path in paths:
-                print("- ", path)
+            results.append(paths)
+
+    return results
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--folder", type=Path, nargs='+', required=True, help="Folders to scan")
+    parser.add_argument("-i", default=False, action="store_true", help="Interactive delete mode")
     args = parser.parse_args()
 
     missing_folder = False
@@ -45,8 +48,28 @@ def main() -> None:
         print("Not searching for duplicates.  Try again with folders that exist")
         return
 
-    find_duplicates(args.folder)
+    duplicates = find_duplicates(args.folder)
+    paths_to_delete: list[Path] = []
+    for paths in duplicates:
+        print("Found duplicate files")
+        for path in paths:
+            print("- ", path)
 
+        if args.i:
+            for path in paths:
+                keep = ask_question(f"Keep {path}?", default=True)
+                if not keep:
+                    paths_to_delete.append(path)
+
+    if paths_to_delete:
+        print("Paths to be deleted")
+        for path in sorted(paths_to_delete):
+            print("-", path)
+
+        delete = ask_question("Permanently delete?", default=False)
+        if delete:
+            for path in paths_to_delete:
+                path.unlink()
 
 if __name__ == "__main__":
     main()
