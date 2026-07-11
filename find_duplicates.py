@@ -35,6 +35,16 @@ def main() -> None:
     parser.add_argument("--folder", type=Path, nargs='+', required=True, help="Folders to scan")
     args = parser.parse_args()
 
+    missing_folder = False
+    for folder in args.folder:
+        if not folder.exists():
+            print("Error:", folder, "does not exist")
+            missing_folder = True
+
+    if missing_folder:
+        print("Not searching for duplicates.  Try again with folders that exist")
+        return
+
     find_duplicates(args.folder)
 
 
