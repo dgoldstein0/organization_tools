@@ -5,13 +5,14 @@ from collections import defaultdict
 from pathlib import Path
 
 
-def find_duplicates(folder: Path):
+def find_duplicates(folders: list[Path]):
     paths_by_size = defaultdict(list)
 
-    for dirpath, dirnames, filenames in folder.walk():
-        for fname in filenames:
-            fpath = dirpath / fname
-            paths_by_size[fpath.stat().st_size].append(fpath)
+    for folder in folders:
+        for dirpath, dirnames, filenames in folder.walk():
+            for fname in filenames:
+                fpath = dirpath / fname
+                paths_by_size[fpath.stat().st_size].append(fpath)
 
 
     paths_by_hash = defaultdict(list)
@@ -31,7 +32,7 @@ def find_duplicates(folder: Path):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--folder", type=Path)
+    parser.add_argument("--folder", type=Path, nargs='+', required=True, help="Folders to scan")
     args = parser.parse_args()
 
     find_duplicates(args.folder)
