@@ -1,10 +1,10 @@
-import argparse
+
 import re
 
 from pathlib import Path
 
-from config import get_config_for_folder, write_config_for_folder
-from util import ask_question
+from .config import get_config_for_folder, write_config_for_folder
+from .util import ask_question
 
 CONFIG_SECTION = "move_dates"
 
@@ -65,16 +65,18 @@ def make_new_name(filename: str) -> str:
     return filename
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--folder", type=Path)
     args = parser.parse_args()
+    move_dates_to_front(args.folder)
 
-    print(f"Searching for files with dates in the names within {args.folder}")
-    for dirpath, dirnames, filenames in args.folder.walk():
+def move_dates_to_front(folder: Path) -> None:
+    print(f"Searching for files with dates in the names within {folder}")
+    for dirpath, dirnames, filenames in folder.walk():
 
         config = get_config_for_folder(dirpath, CONFIG_SECTION) or {}
-        rel_dirpath = dirpath.relative_to(args.folder)
+        rel_dirpath = dirpath.relative_to(folder)
 
         always_skip_files = []
         for fname in filenames:

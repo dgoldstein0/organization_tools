@@ -8,9 +8,12 @@ def main() -> None:
     parser.add_argument("--folder", type=Path)
     args = parser.parse_args()
 
-    print(f"Searching for files with dates in the names within {args.folder}")
+    find_dated_files_in_wrong_year_folder(args.folder)
 
-    for dirpath, dirnames, filenames in args.folder.walk():
+def find_dated_files_in_wrong_year_folder(folder: Path) -> None:
+    print(f"Searching for files with dates in the names within {folder}")
+
+    for dirpath, dirnames, filenames in folder.walk():
         folder_year = None
         for p in reversed(dirpath.parts):
             if re.match(r"^(19|20)\d\d$", p):

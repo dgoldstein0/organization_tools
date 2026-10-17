@@ -3,7 +3,7 @@ import hashlib
 
 from collections import defaultdict
 from pathlib import Path
-from util import ask_question
+from .util import ask_question
 
 
 def find_duplicates(folders: list[Path]) -> list[list[Path]]:
@@ -38,8 +38,11 @@ def main() -> None:
     parser.add_argument("-i", default=False, action="store_true", help="Interactive delete mode")
     args = parser.parse_args()
 
+    report_and_handle_duplicates(args.folder, report_only=not args.i)
+
+def report_and_handle_duplicates(folders: list[Path], report_only: bool) -> None:
     missing_folder = False
-    for folder in args.folder:
+    for folder in folders:
         if not folder.exists():
             print("Error:", folder, "does not exist")
             missing_folder = True
@@ -48,14 +51,14 @@ def main() -> None:
         print("Not searching for duplicates.  Try again with folders that exist")
         return
 
-    duplicates = find_duplicates(args.folder)
+    duplicates = find_duplicates(folders)
     paths_to_delete: list[Path] = []
     for paths in duplicates:
         print("Found duplicate files")
         for path in paths:
             print("- ", path)
 
-        if args.i:
+        if not report_only:
             for path in paths:
                 keep = ask_question(f"Keep {path}?", default=True)
                 if not keep:

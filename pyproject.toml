@@ -1,0 +1,24 @@
+[project]
+name = "organization-tools"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "David Goldstein", email = "dgoldstein0@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0.3",
+]
+
+[project.scripts]
+organize = "organization_tools:organize.main"
+find_duplicates = "organization_tools:find_duplicates.main"
+create_new_yearly_folders = "organization_tools:create_new_yearly_folders.main"
+find_misorganized_files = "organization_tools:find_misorganized_files.main"
+find_files_with_no_extensions = "organization_tools:find_files_With_no_extensions.main"
+move_dates_to_front = "organization_tools:move_dates_to_front.main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"

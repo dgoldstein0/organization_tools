@@ -3,22 +3,25 @@ import re
 
 from pathlib import Path
 
-from config import get_config_for_folder, write_config_for_folder
-from util import ask_question
+from .config import get_config_for_folder, write_config_for_folder
+from .util import ask_question
 
 CONFIG_SECTION = "files_without_extensions"
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--folder", type=Path)
     args = parser.parse_args()
 
-    print(f"Searching for filenames without an extension within {args.folder}")
-    for dirpath, dirnames, filenames in args.folder.walk():
+    find_files_with_no_extensions(args.folder)
+
+def find_files_with_no_extensions(folder: Path) -> None:
+    print(f"Searching for filenames without an extension within {folder}")
+    for dirpath, dirnames, filenames in folder.walk():
 
         config = get_config_for_folder(dirpath, CONFIG_SECTION) or {}
-        rel_dirpath = dirpath.relative_to(args.folder)
+        rel_dirpath = dirpath.relative_to(folder)
 
         always_skip_files = []
         for fname in filenames:
