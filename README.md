@@ -24,4 +24,4 @@ Developed with python 3.12.7 running under git-bash, and uv for package manageme
 
 # Testing
 
-`python move_dates_to_front_test.py` - if no output, the test passes.
+`uv run pytest -vvv`
